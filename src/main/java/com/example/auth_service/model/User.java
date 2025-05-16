@@ -6,40 +6,70 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * JPA entity representing an application user.
+ */
 @Entity
-@Table(name="users")
+@Table(name = "users")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor                     // for JPA
+@AllArgsConstructor                    // generates the 10-arg constructor
+@Builder
 public class User {
-  
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false)
-  private String password;
+    @Column(nullable = true)
+    private String fullname;
 
-  @Column(nullable = false)
-  private String salt;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-  private LocalDateTime lastLogin;
-  private LocalDateTime lastLogout;
-  private int loginCount;
+    @Column(nullable = true)
+    private String phonenum;
 
-  /**
-   * Each entry here is one role, e.g. "ROLE_USER" or "ROLE_ADMIN".
-   * Stored in a separate table "user_roles" under column "role".
-   */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(
-    name = "user_roles",
-    joinColumns = @JoinColumn(name = "user_id")
-  )
-  @Column(name = "role", nullable = false)
-  private Set<String> roles = new HashSet<>();
+    @Column(nullable = false)
+    private String password;
 
+    @Column(nullable = false)
+    private String salt;
+
+    private LocalDateTime lastLogin;
+    private LocalDateTime lastLogout;
+    private int loginCount;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "role", nullable = false)
+    @Builder.Default
+    private Set<String> roles = new HashSet<>();
+
+    /**
+     * Minimal legacy constructor matching existing tests:
+     *   (id, email, password, salt, lastLogin, lastLogout, loginCount, roles)
+     */
+    public User(Long id,
+                String email,
+                String password,
+                String salt,
+                LocalDateTime lastLogin,
+                LocalDateTime lastLogout,
+                int loginCount,
+                Set<String> roles) {
+        this.id = id;
+        this.fullname = null;
+        this.email = email;
+        this.phonenum = null;
+        this.password = password;
+        this.salt = salt;
+        this.lastLogin = lastLogin;
+        this.lastLogout = lastLogout;
+        this.loginCount = loginCount;
+        this.roles = (roles != null) ? roles : new HashSet<>();
+    }
 }

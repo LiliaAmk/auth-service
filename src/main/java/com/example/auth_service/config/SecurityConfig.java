@@ -50,6 +50,7 @@ public class SecurityConfig {
           .sessionManagement(sm ->
               sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
           )
+          
 
           // Allow framing (for H2-console)
           .headers(headers ->
